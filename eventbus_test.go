@@ -20,7 +20,8 @@ func TestEventBus(t *testing.T) {
 
 	b.Subscribe <- subscriber1
 	assert.Equal("test", b.Name, "bus has a name")
-	assert.Equal(1, b.ConnectionCount(), "should have one subscriber")
+
+	assert.Equal(int64(1), b.SubscriberCount(), "should have one subscriber")
 
 	count := 0
 	messagesReceived := []string{}
@@ -50,8 +51,9 @@ func TestEventBus(t *testing.T) {
 	for i := range messagesReceived {
 		assert.Equal(expectedMessages[i], messagesReceived[i], "messages match")
 	}
-	// TODO fix race condition
-	// assert.Equal(t, 0, b.ConnectionCount(), "should have no subscribers")
+
+	noSubCount := b.SubscriberCount()
+	assert.Equal(int64(0), noSubCount, "should have no subscribers")
 }
 
 func setupTimerProducer(bus *eventbus.EventBus, expectedMessages []string, dur time.Duration) {
